@@ -1,37 +1,40 @@
 <div class="VueTables VueTables--[[source]]">
 
-    <div class="table-controls">
-        <div class="table-controls__group">
-            <b>Pagina: {{page}} van {{totalPages}}</b>
-        </div>
+    <section class="block">
+        <div class="table-controls">
+            <div class="table-controls__group">
+                <b>Pagina: {{page}} van {{totalPages}}</b>
+            </div>
 
-        <div class="table-controls__group">
-            <div class="VueTables__limit">
-                <b>Resultaten per pagina: </b>
-                <select class="form-control" v-model="limit" @change="setPage(1, true)">
-                    <option v-for="value in options.perPageValues">{{value}}</option>
+            <div class="table-controls__group">
+                <div class="VueTables__limit">
+                    <b>Resultaten per pagina: </b>
+                    <select class="form-control" v-model="limit" @change="setPage(1, true)">
+                        <option v-for="value in options.perPageValues">{{value}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-controls__group">
+                <b>{{count}} records</b>
+            </div>
+
+            <div class="table-controls__group">
+                <button type="button" class="btn btn--default" [[trackBy]] @click='options.changeColumns()'>Columns</button>
+            </div>
+
+            <div class="table-controls__group" v-if="exportable()">
+                Exporteer naar
+
+                <select name="export" id="export_types" class="fancy-select  select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                    <option value=""></option>
+                    <option v-for="option in exportOptions" value="{{option.value}}" data-post-url="{{option.post_url}}">{{option.label}}</option>
                 </select>
+                <button type="button" id="export_btn" class="btn btn--default" [[trackBy]] @click='exportData()'>Export</button>
             </div>
         </div>
-        <div class="table-controls__group">
-            <b>{{count}} records</b>
-        </div>
-        <div class="table-controls__group">
-            Exporteer naar
+    </section>
 
-            <select name="export" class="fancy-select  select2-hidden-accessible" tabindex="-1" aria-hidden="true">
-                <option value=""></option>
-                <option value="CSV">CSV</option>
-                <option value="PDF">PDF</option>
-            </select>
-            <button type="button" class="btn btn--default">Export</button>
-        </div>
-    </div>
-
-
-
-
-    <div class="VueTables__table-wrapper" v-bind:class="options.wrapperClasses">
+    <div class="VueTables__table-wrapper block" v-bind:class="options.wrapperClasses">
         <table class="VueTables__table table table--certification" v-bind:class="options.skin">
             <thead>
             <tr>
@@ -44,36 +47,32 @@
                           v-bind:class="sortableChevronClass(column)"></span></th>
             </tr>
             <tr v-if="options.filterByColumn" class="VueTables__filters-row row-filters">
-                <th v-for="column in allColumns">
-                    <div class="VueTables__column-filter VueTables__{{column}}-filter-wrapper"
-                         v-if="filterable(column)">
-                        <input @keydown="search() | debounce options.delay"
-                               v-if="isTextFilter(column)"
-                               class="form-control input-sm js-filter-input"
-                               type="text"
-                               placeholder="{{display('filterBy',getHeading(column))}}"
-                               v-model="query[column]">
+                <th v-for="column in allColumns" class="VueTables__column-filter VueTables__{{column}}-filter-wrapper"
+                    v-if="filterable(column)">
 
-                        <div class="VueTables__date-filter"
-                             id="VueTables__{{column}}-filter"
-                             v-if="isDateFilter(column)">
-                            <span class="VueTables__filter-placeholder">{{display('filterBy',getHeading(column))}}</span>
-                        </div>
+                    <input @keydown="search() | debounce options.delay"
+                           v-if="isTextFilter(column)"
+                           class="form-control input-sm js-filter-input"
+                           type="text"
+                           placeholder="{{display('filterBy',getHeading(column))}}"
+                           v-model="query[column]">
 
-                        <div class="form-control input-sm"
-                             id="VueTables__{{column}}-filter"
-                             v-if="isListFilter(column)">
-                            <select class='fancy-select select2-hidden-accessible'
-                                    @change="search()"
-                                    v-model="query[column]">
-                                <option value="">{{display('defaultOption',getHeading(column))}}</option>
-                                <option v-for="option in options.listColumns[column]" value="{{option.id}}">
-                                    {{option.text}}
-                                </option>
-                            </select>
-                        </div>
-
+                        <!--<span class="VueTables__filter-placeholder">{{display('filterBy',getHeading(column))}}</span>-->
+                        <input name="col-geldigheid" id="VueTables__{{column}}-filter"
+                               v-if="isDateFilter(column)" class="form-control daterange VueTables__date-filter">
                     </div>
+
+                    <select class='form-control'
+                            @change="search()"
+                            v-model="query[column]"
+                            id="VueTables__{{column}}-filter"
+                            v-if="isListFilter(column)">
+                        <option value="">{{display('defaultOption',getHeading(column))}}</option>
+                        <option v-for="option in options.listColumns[column]" value="{{option.id}}">
+                            {{option.text}}
+                        </option>
+                    </select>
+
                 </th>
             </tr>
             </thead>
@@ -88,7 +87,8 @@
             </tr>
             </tfoot>
             <tbody v-el:tbody>
-            <tr v-for="row in data [[rowFilters]]" [[trackBy]] @click='options.onRowClick(row)' v-bind:class="warningRowClass(row)">
+            <tr v-for="row in data [[rowFilters]]" [[trackBy]] @click='options.onRowClick(row)'
+                v-bind:class="warningRowClass(row)">
                 <td v-for="column in allColumns"
                     v-html="row[column] | render row column [[columnFilters]]"></td>
             </tr>
@@ -104,13 +104,14 @@
         </table>
     </div>
 
-    <pagination v-ref:pagination v-if="options.pagination && !options.pagination.dropdown"
-                :for="id"
-                :records="count"
-                :per-page="limit"
-                :chunk="options.pagination.chunk"
-                :count-text="options.texts.count">
-    </pagination>
-
+    <nav class="table-pagination">
+        <pagination v-ref:pagination v-if="options.pagination && !options.pagination.dropdown"
+                    :for="id"
+                    :records="count"
+                    :per-page="limit"
+                    :chunk="options.pagination.chunk"
+                    :count-text="options.texts.count">
+        </pagination>
+    </nav>
 </div>
 
