@@ -47,31 +47,31 @@
                           v-bind:class="sortableChevronClass(column)"></span></th>
             </tr>
             <tr v-if="options.filterByColumn" class="VueTables__filters-row row-filters">
-                <th v-for="column in allColumns" class="VueTables__column-filter VueTables__{{column}}-filter-wrapper"
-                    v-if="filterable(column)">
-
-                    <input @keydown="search() | debounce options.delay"
-                           v-if="isTextFilter(column)"
-                           class="form-control input-sm js-filter-input"
-                           type="text"
-                           placeholder="{{display('filterBy',getHeading(column))}}"
-                           v-model="query[column]">
+                <th v-for="column in allColumns" class="VueTables__column-filter VueTables__{{column}}-filter-wrapper">
+                    <div v-if="filterable(column)">
+                        <input @keydown="search() | debounce options.delay"
+                               v-if="isTextFilter(column)"
+                               class="form-control input-sm js-filter-input"
+                               type="text"
+                               placeholder="{{display('filterBy',getHeading(column))}}"
+                               v-model="query[column]">
 
                         <!--<span class="VueTables__filter-placeholder">{{display('filterBy',getHeading(column))}}</span>-->
                         <input name="col-geldigheid" id="VueTables__{{column}}-filter"
                                v-if="isDateFilter(column)" class="form-control daterange VueTables__date-filter">
+
+                        <select class='form-control'
+                                @change="search()"
+                                v-model="query[column]"
+                                id="VueTables__{{column}}-filter"
+                                v-if="isListFilter(column)">
+                            <option value="">{{display('defaultOption',getHeading(column))}}</option>
+                            <option v-for="option in options.listColumns[column]" value="{{option.id}}">
+                                {{option.text}}
+                            </option>
+                        </select>
                     </div>
 
-                    <select class='form-control'
-                            @change="search()"
-                            v-model="query[column]"
-                            id="VueTables__{{column}}-filter"
-                            v-if="isListFilter(column)">
-                        <option value="">{{display('defaultOption',getHeading(column))}}</option>
-                        <option v-for="option in options.listColumns[column]" value="{{option.id}}">
-                            {{option.text}}
-                        </option>
-                    </select>
 
                 </th>
             </tr>
