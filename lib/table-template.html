@@ -60,23 +60,13 @@
                         <input name="col-geldigheid" id="VueTables__{{column}}-filter"
                                v-if="isDateFilter(column)" class="form-control daterange VueTables__date-filter">
 
-                        <select multiple class='form-control select2-single-js'
+                        <select class='form-control select2-single-js'
                                 @change="search()"
                                 v-model="query[column]"
                                 id="VueTables__{{column}}-filter"
                                 v-if="isListFilter(column)">
                             <option value="">{{display('defaultOption',getHeading(column))}}</option>
                             <option v-for="option in options.listColumns[column]" value="{{option.id}}">
-                                {{option.text}}
-                            </option>
-                        </select>
-
-                        <select multiple="multiple" class='form-control select2-multiple-js'
-                                @change="search()"
-                                v-model="query[column]"
-                                id="VueTables__{{column}}-filter"
-                                v-if="isMultiListFilter(column)">
-                            <option v-for="option in options.multiListColumns[column]" value="{{option.id}}">
                                 {{option.text}}
                             </option>
                         </select>
