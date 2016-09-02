@@ -70,6 +70,16 @@
                                 {{option.text}}
                             </option>
                         </select>
+
+                        <select multiple class='form-control select2-single-js'
+                                @change="search()"
+                                v-model="query[column]"
+                                id="VueTables__{{column}}-filter"
+                                v-if="isMultiListFilter(column)">
+                            <option v-for="option in options.listColumns[column]" value="{{option.id}}">
+                                {{option.text}}
+                            </option>
+                        </select>
                     </div>
 
 
