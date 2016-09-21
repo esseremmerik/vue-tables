@@ -1,41 +1,42 @@
 <div class="VueTables VueTables--[[source]]">
 
     <section class="block">
-        <div class="table-controls">
-            <div class="table-controls__group">
+        <div class="{{options.css.controlblock}}">
+            <div class="{{options.css.controlgroupShort}}"> <!---->
                 <b>Pagina: {{page}} van {{totalPages}}</b>
             </div>
 
-            <div class="table-controls__group">
+            <div class="{{options.css.controlgroupShort}}">
                 <div class="VueTables__limit">
-                    <b>Resultaten per pagina: </b>
+                    <b>{{display('resultPerPage')}}</b>
                     <select class="form-control" v-model="limit" @change="setPage(1, true)">
                         <option v-for="value in options.perPageValues">{{value}}</option>
                     </select>
                 </div>
             </div>
-            <div class="table-controls__group">
-                <b>{{count}} records</b>
+            <div class="{{options.css.controlgroupShort}}">
+                <b>Records {{count}}</b>
             </div>
 
-            <div class="table-controls__group">
-                <button type="button" class="btn btn--default" [[trackBy]] @click='options.changeColumns()'>Columns</button>
+            <div class="{{options.css.controlgroupShort}}">
+                <button type="button" class="btn btn--default" [[trackBy]] @click='options.changeColumns()'>{{display('columns')}}</button>
             </div>
 
-            <div class="table-controls__group" v-if="exportable()">
-                Exporteer naar
+            <div class="{{options.css.controlgroup}}" v-if="exportable()">
+                {{display('export')}}
 
-                <select name="export" id="export_types" class="fancy-select  select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                <select name="export" id="export_types" class="select2-export-js" tabindex="-1" aria-hidden="true">
                     <option value=""></option>
-                    <option v-for="option in exportOptions" value="{{option.value}}" data-post-url="{{option.post_url}}">{{option.label}}</option>
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
                 </select>
-                <button type="button" id="export_btn" class="btn btn--default" [[trackBy]] @click='exportData()'>Export</button>
+                <button type="button" id="export_btn" class="btn btn_default btn--default" [[trackBy]] @click='exportData()'>{{display('exportBtn')}}</button>
             </div>
         </div>
     </section>
 
-    <div class="VueTables__table-wrapper block" v-bind:class="options.wrapperClasses">
-        <table class="VueTables__table table table--certification" v-bind:class="options.skin">
+    <div class="VueTables__table-wrapper block {{options.css.tableBlock}}" v-bind:class="options.wrapperClasses">
+        <table class="VueTables__table table {{options.css.table}}" v-bind:class="options.skin">
             <thead>
             <tr>
                 <th @click="orderByColumn(column)"
@@ -54,6 +55,7 @@
                                class="form-control input-sm js-filter-input"
                                type="text"
                                placeholder="{{display('filterBy',getHeading(column))}}"
+                               value="{{preFilter(column)}}"
                                v-model="query[column]">
 
                         <!--<span class="VueTables__filter-placeholder">{{display('filterBy',getHeading(column))}}</span>-->
