@@ -9,7 +9,7 @@
             <div class="{{options.css.controlgroupShort}}">
                 <div class="VueTables__limit">
                     <b>{{display('resultPerPage')}}</b>
-                    <select class="form-control" v-model="limit" @change="setPage(1, true)">
+                    <select class="form-control select2-perPage-js" v-model="limit" @change="setPage(1, true)">
                         <option v-for="value in options.perPageValues">{{value}}</option>
                     </select>
                 </div>
@@ -19,16 +19,15 @@
             </div>
 
             <div class="{{options.css.controlgroupShort}}">
-                <button type="button" class="btn btn--default" [[trackBy]] @click='options.changeColumns()'>{{display('columns')}}</button>
+                <button type="button" class="btn {{options.css.btnColumns}}" [[trackBy]] @click='options.changeColumns()'>{{display('columns')}}</button>
             </div>
 
             <div class="{{options.css.controlgroup}}" v-if="exportable()">
                 {{display('export')}}
 
-                <select name="export" id="export_types" class="select2-export-js" tabindex="-1" aria-hidden="true">
-                    <option value=""></option>
+                <select name="export" id="export_types" class="select2-export-js" tabindex="-1" aria-hidden="true" style="width: 80px">
                     <option value="csv">CSV</option>
-                    <option value="excel">Excel</option>
+                    <option value="xls">Excel</option>
                 </select>
                 <button type="button" id="export_btn" class="btn btn_default btn--default" [[trackBy]] @click='exportData()'>{{display('exportBtn')}}</button>
             </div>
